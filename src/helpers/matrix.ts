@@ -1,87 +1,79 @@
-export default class Matrix {
+export default class Matrix<T = number> {
   #rows: number
   #cols: number
-  #data: number[][]
+  #data: T[][]
 
   constructor(rows: number, cols: number) {
     this.#rows = rows
     this.#cols = cols
 
-    this.#data = [...new Array(this.#rows)].map(() => [...new Array(this.#cols)].map(() => 1))
-  }
-
-  multiplyWithNumber(value: number) {
-    for (let i = 0; i < this.#rows; i++) {
-      for (let j = 0; j < this.#cols; j++) {
-        this.#data[i][j] *= value
-      }
-    }
-  }
-
-  multiplyWithMatrix(value: Matrix): void {
-    if (this.#cols !== value.rows) throw new Error('columns and row not match')
-
-    const temp = new Matrix(this.#rows, value.cols)
-
-    for (let i = 0; i < temp.rows; i++) {
-      for (let j = 0; j < temp.cols; j++) {
-        let sum = 0
-        for (let k = 0; k < this.#cols; k++) {
-          sum += this.#data[i][k] * value.matrix[k][j]
-        }
-
-        temp.#data[i][j] = sum
-      }
-    }
-
-    this.#data = temp.matrix
+    this.#data = [...new Array(this.#rows)].map(() =>
+      [...new Array(this.#cols)].map(() => 1)
+    ) as T[][]
   }
 
   setInput(value: number[]) {
     for (let i = 0; i < this.#rows; i++) {
       for (let j = 0; j < this.#cols; j++) {
-        this.#data[i][j] = value[j]
+        this.#data[i][j] = value[j] as T
       }
     }
   }
 
   map(func: (x: number, a: number, b: number, c: number) => number, premis: number[][]) {
-    // const [a, b, c] = premis
     for (let i = 0; i < this.#rows; i++) {
       for (let j = 0; j < this.#cols; j++) {
-        const value = this.#data[i][j]
+        const value = this.#data[i][j] as number
         const [a, b, c] = premis[i]
-        this.#data[i][j] = func(value, a, b, c)
+        this.#data[i][j] = func(value, a, b, c) as T
       }
     }
   }
 
-  /*
-  [
-    [1, 2, 3]
-    [1, 2, 3]
-    [1, 2, 3]
-    [1, 2, 3]
-    [4, 5, 6]
-    [4, 5, 6]
-    [4, 5, 6]
-    [4, 5, 6]
-  ]
-  */
+  static from2DArray(value: number[][], rows: number, cols: number): Matrix<number[]> {
+    if (value.length % rows !== 0) throw new Error('invalid length')
+    const result = new Matrix<number[]>(rows, cols)
 
-  // static fromMultiArray(value: number[][], rows: number, cols: number) {
-  //   const result = new Matrix(rows, cols)
-  //   for (let i = 0; i < result.#rows; i++) {
-  //     for (let j = 0; j < result.#cols; j++) {
-  //       result.#data[i][j] =
-  //     }
-  //   }
+    let index = 0
 
-  //   return result
-  // }
+    for (let i = 0; i < result.#cols; i++) {
+      for (let j = 0; j < result.#rows; j++) {
+        if (i === 0 && j === 0) {
+          result.#data[i][j] = value[0]
+        } else {
+          result.#data[j][i] = value[index]
+        }
+        index += 1
+      }
+    }
 
-  static arrayAsInput(arrayInput: number[]): number[][] {
-    return arrayInput.map((input) => [input])
+    return result
+  }
+
+  static mapFunc(
+    func: (x: number, a: number, b: number, c: number) => number,
+    rows: number,
+    cols: number
+  ) {
+    const result = new Matrix<typeof func>(rows, cols)
+    for (let i = 0; i < result.#rows; i++) {
+      for (let j = 0; j < result.#cols; j++) {
+        result.#data[i][j] = func
+      }
+    }
+
+    return result
+  }
+
+  static arrayAsInput(arrayInput: number[]): Matrix {
+    const result = new Matrix(arrayInput.length, 1)
+    for (let i = 0; i < result.#rows; i++) {
+      for (let j = 0; j < result.#cols; j++) {
+        result.#data[i][j] = arrayInput[i]
+      }
+    }
+
+    return result
   }
 
   get matrix() {
@@ -94,5 +86,9 @@ export default class Matrix {
 
   get cols() {
     return this.#cols
+  }
+
+  setData(i: number, j: number, value: T) {
+    this.#data[i][j] = value as T
   }
 }

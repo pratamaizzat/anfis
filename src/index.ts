@@ -1,5 +1,4 @@
-import { generateMF } from './helpers'
-
+export {}
 /**
  * 2 inputs (x and y)
  *
@@ -9,5 +8,3 @@ import { generateMF } from './helpers'
  * sugeno model-1: f = (w1xf1)+(w2xf2)/w1+w2
  *
  */
-
-console.log({ foo: generateMF(10)('basic') })
