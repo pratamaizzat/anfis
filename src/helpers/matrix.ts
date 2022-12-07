@@ -30,6 +30,21 @@ export default class Matrix<T = number> {
     }
   }
 
+  reduce() {
+    const temp = new Matrix(this.#rows, 1)
+    for (let i = 0; i < this.#rows; i++) {
+      let reduceValue = 1
+      for (let j = 0; j < this.#cols; j++) {
+        reduceValue *= this.#data[i][j] as number
+      }
+      temp.#data[i][0] = reduceValue
+    }
+
+    this.#rows = temp.#rows
+    this.#cols = temp.#cols
+    this.#data = temp.#data as T[][]
+  }
+
   static from2DArray(value: number[][], rows: number, cols: number): Matrix<number[]> {
     if (value.length % rows !== 0) throw new Error('invalid length')
     const result = new Matrix<number[]>(rows, cols)
@@ -65,6 +80,19 @@ export default class Matrix<T = number> {
     return result
   }
 
+  toArray(): number[] {
+    let count = 0
+    const result = new Array(this.#rows * this.#cols).fill(null)
+
+    for (let i = 0; i < this.#rows; i++) {
+      for (let j = 0; j < this.#cols; j++) {
+        result[count] = this.#data[i][j]
+        count++
+      }
+    }
+    return result
+  }
+
   static arrayAsInput(arrayInput: number[]): Matrix {
     const result = new Matrix(arrayInput.length, 1)
     for (let i = 0; i < result.#rows; i++) {
@@ -73,6 +101,32 @@ export default class Matrix<T = number> {
       }
     }
 
+    return result
+  }
+
+  static multiply(matrix1: Matrix, matrix2: Matrix): Matrix {
+    const result = new Matrix(matrix1.#rows, matrix2.#cols)
+    for (let i = 0; i < result.#rows; i++) {
+      for (let j = 0; j < result.#cols; j++) {
+        let sum = 0
+
+        for (let k = 0; k < matrix1.#cols; k++) {
+          sum += matrix1.#data[i][k] * matrix2.#data[k][j]
+        }
+
+        result.#data[i][j] = sum
+      }
+    }
+    return result
+  }
+
+  static multiplyWithNumber(value: number, matrix: Matrix): Matrix {
+    const result = new Matrix(matrix.#rows, matrix.#cols)
+    for (let i = 0; i < result.#rows; i++) {
+      for (let j = 0; j < result.#cols; j++) {
+        result.#data[i][j] = matrix.#data[i][j] * value
+      }
+    }
     return result
   }
 

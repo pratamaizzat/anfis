@@ -47,4 +47,15 @@ describe('Matrix Class', () => {
     expect(result.matrix[0][3]).toBe(inputToTest[15])
     expect(result.matrix[4][3]).toBe(inputToTest[19])
   })
+
+  it('should multiply matrix with matrix', () => {
+    const matrix1 = new Matrix(1, 4)
+    const matrix2 = new Matrix(4, 1)
+
+    const result = Matrix.multiply(matrix1, matrix2)
+
+    expect(result.matrix.length).toBe(1)
+    expect(result.matrix[0].length).toBe(1)
+    expect(result.matrix[0][0]).toBe(4)
+  })
 })
