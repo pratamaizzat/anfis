@@ -120,6 +120,22 @@ export default class Matrix<T = number> {
     return result
   }
 
+  addWithMatrix(matrix: Matrix<number>) {
+    for (let i = 0; i < this.#rows; i++) {
+      for (let j = 0; j < this.#cols; j++) {
+        this.#data[i][j] = ((matrix.#data[i][j] as number) + (this.#data[i][j] as number)) as T
+      }
+    }
+  }
+
+  multiplyWithMatrix(matrix: Matrix) {
+    for (let i = 0; i < this.#rows; i++) {
+      for (let j = 0; j < this.#cols; j++) {
+        this.#data[i][j] = ((matrix.#data[i][j] as number) * (this.#data[i][j] as number)) as T
+      }
+    }
+  }
+
   static multiplyWithNumber(value: number, matrix: Matrix): Matrix {
     const result = new Matrix(matrix.#rows, matrix.#cols)
     for (let i = 0; i < result.#rows; i++) {
