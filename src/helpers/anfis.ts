@@ -44,6 +44,24 @@ export default class Anfis {
     return out5
   }
 
+  messFeedForward(inputTest: number[]): number {
+    const input = Matrix.arrayAsInput(inputTest)
+    const out1 = MembershipFunction.execute(input, this.mf, this.premis)
+    out1.reduce() // out2
+
+    const sumOut1 = Matrix.multiply(new Matrix(1, 4), out1).toArray()[0]
+
+    const out3 = Matrix.multiplyWithNumber(1 / sumOut1, out1)
+
+    const out4 = Matrix.multiply(this.consequentPQRS, input)
+    out4.addWithMatrix(this.consequentT)
+    out4.multiplyWithMatrix(out3)
+
+    const out5 = out4.matrix.flat().reduce((prev, curr) => prev + curr)
+
+    return out5
+  }
+
   formatConsequent(): { pqrs: Matrix; t: Matrix } {
     const pqrs = new Matrix(this.nodeMF, this.nodeInput)
     const t = new Matrix(this.nodeMF, 1)
